@@ -1,0 +1,100 @@
+import json
+
+""" --- Helpers to call jService (https://jservice.io/) --- """
+
+def precioTipoComida(comidaElegida):
+    comidas = {
+    "Alambre vegetariano": 115,
+    "Alambre pechuga": 120,
+    "Alambre bistec": 120,
+    "Alambre chuleta": 120,
+    "Alambre costilla": 130,
+    "Alambre arrachera": 145,
+    
+    "Costra pastor": 30,
+    "Costra pechuga": 35,
+    "Costra bistec": 35,
+    
+    "Volcan pastor": 22,
+    "Volcan pechuga": 22,
+    "Volcan bistec": 28,
+    
+    "Torta pastor": 50,
+    "Torta maciza": 50,
+    "Torta suadero": 50,
+    "Torta longaniza": 50,
+    "Torta pechuga": 50,
+    "Torta bistec": 65,
+    "Torta chuleta": 65,
+    }
+        
+    return comidas[comidaElegida]
+    
+def precioBebida(comidaElegida):
+    
+    bebidas = {
+        "Refresco": 23,
+        "Agua natural": 20,
+        "Agua de jamaica": 24,
+        "Agua de horchata": 24,
+        
+        "Cerveza botella": 33,
+        "Cerveza barril": 33,
+        "Cerveza litro": 80,
+        "Michelada 1L": 90,
+        "Michelato 1L": 90,
+        "Ninguno": 0
+    }
+    
+    return bebidas[comidaElegida]
+    
+def precioPostre(comidaElegida):
+    postres = {
+    "Arroz con leche": 30,
+    "Pastel chocolate": 35,
+    "Fresas con crema": 35,
+    "Gelatina": 20,
+    "Flan": 30,
+    "Ninguno": 0
+    }
+    
+    return postres[comidaElegida]
+    
+    
+""" --- Main handler --- """
+
+
+def lambda_handler(event, context):
+    total = 0
+    intent_name = event['interpretations'][0]['intent']['name']
+    slots = event['interpretations'][0]['intent']['slots']
+    
+    valorTipoComida = slots['tipoComida']['value']['interpretedValue']
+    valorBebida = slots['Bebida']['value']['interpretedValue']
+    valorPostre = slots['Postre']['value']['interpretedValue']
+    
+    print(valorPostre, valorBebida, valorTipoComida)
+    
+    total = precioTipoComida(valorTipoComida) + precioPostre(valorPostre) + precioBebida(valorBebida)
+    
+    message = "¡Gracias por su compra! El total es de: $" + str(total) 
+
+    response = {
+       'sessionState' : {
+            'dialogAction' : {
+                'type' : 'Close'
+            },
+            'intent' : {
+                'name' : intent_name,
+                'state' : 'Fulfilled'
+            }
+       },
+        'messages': [
+             {
+                'contentType' : 'PlainText',
+                'content' : message
+             }
+        ]
+    }
+
+    return response
